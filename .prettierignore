@@ -1,0 +1,7 @@
+node_modules
+.git
+**/index.html
+**/dist.js
+**/dist.css
+package.json
+package-lock.json

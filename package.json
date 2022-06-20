@@ -1,0 +1,23 @@
+{
+  "name": "svelte-adi",
+  "version": "1.0.0",
+  "description": "Exempel hur att jobba med Svelte i en Node-miljö",
+  "private": true,
+  "scripts": {
+    "prettier:check": "prettier . --check",
+    "prettier:write": "prettier . --write",
+    "test": "npm run prettier:check",
+    "demo:client": "node client/generateSvelte.js && npx http-server client/public",
+    "demo:server": "node server/generateSvelte.js && npx http-server server/public",
+    "demo:hydrate": "node hydrate/generateSvelte.js && npx http-server hydrate/public"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.14.43",
+    "fs-extra": "^10.1.0",
+    "prettier": "^2.7.1",
+    "prettier-plugin-svelte": "^2.7.0",
+    "svelte": "^3.48.0"
+  }
+}
