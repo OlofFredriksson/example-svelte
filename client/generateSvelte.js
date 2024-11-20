@@ -1,13 +1,16 @@
-const fs = require("fs-extra");
-const svelte = require("svelte/compiler");
-const esbuild = require("esbuild");
-const path = require("path");
+import fs from "fs-extra";
+import { compile } from "svelte/compiler";
+import esbuild from "esbuild";
+import path from "node:path";
+
+const __dirname = import.meta.dirname;
+
 const srcPath = path.join(__dirname, "../src");
 const publicPath = path.join(__dirname, "public/");
 
 const file = fs.readFileSync(`${srcPath}/App.svelte`, "utf-8");
 
-const compiledComponent = svelte.compile(file, {
+const compiledComponent = compile(file, {
     generate: "dom",
     css: false,
     name: "myApp",

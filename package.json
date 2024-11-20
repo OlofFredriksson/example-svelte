@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Exempel hur att jobba med Svelte i en Node-miljö",
   "private": true,
+  "type":"module",
   "scripts": {
     "prettier:check": "prettier . --check",
     "prettier:write": "prettier . --write",

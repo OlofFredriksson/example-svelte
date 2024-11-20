@@ -1,12 +1,14 @@
-const fs = require("fs");
-const svelte = require("svelte/compiler");
-const esbuild = require("esbuild");
-const path = require("path");
+import fs from "node:fs";
+import { compile } from "svelte/compiler";
+import esbuild from "esbuild";
+import path from "node:path";
+
+const __dirname = import.meta.dirname;
 const srcPath = path.join(__dirname, "../src");
 
 const svelteComponent = fs.readFileSync(`${srcPath}/App.svelte`, "utf-8");
 
-const compiledComponent = svelte.compile(svelteComponent, {
+const compiledComponent = compile(svelteComponent, {
     generate: "ssr",
     css: true,
     name: "myApp",
@@ -17,6 +19,7 @@ fs.writeFileSync(`${srcPath}/dist.js`, compiledComponent.js.code);
 esbuild.buildSync({
     entryPoints: [`${srcPath}/dist.js`],
     bundle: true,
+    format: "esm",
     platform: "node",
     write: true,
     outdir: path.join(__dirname, "public"),
@@ -26,7 +29,8 @@ esbuild.buildSync({
 // Enbart i demo syfte, borde vara i en annan fil ._.
 //
 
-const myApp = require("./public/dist").default;
+const myApp = (await import("./public/dist.js")).default;
+
 const renderedApp = myApp.render({
     passedProp: "passedProp (ssr)",
 });

@@ -1,12 +1,14 @@
-const fs = require("fs");
-const svelte = require("svelte/compiler");
-const esbuild = require("esbuild");
-const path = require("path");
+import fs from "fs-extra";
+import { compile } from "svelte/compiler";
+import esbuild from "esbuild";
+import path from "node:path";
+
+const __dirname = import.meta.dirname;
 const srcPath = path.join(__dirname, "../src");
 
 const svelteComponent = fs.readFileSync(`${srcPath}/App.svelte`, "utf-8");
 
-const compiledComponent = svelte.compile(svelteComponent, {
+const compiledComponent = compile(svelteComponent, {
     generate: "ssr",
     css: true,
     name: "myApp",
@@ -19,6 +21,7 @@ esbuild.buildSync({
     bundle: true,
     platform: "node",
     write: true,
+    format: "esm",
     outdir: path.join(__dirname, "public"),
 });
 
@@ -26,7 +29,7 @@ esbuild.buildSync({
 // Enbart i demo syfte, borde vara i en annan fil ._.
 //
 
-const mySSRApp = require("./public/dist").default;
+const mySSRApp = (await import("./public/dist.js")).default;
 const renderedApp = mySSRApp.render({
     passedProp: "passedProp (hydrate)",
 });
@@ -50,7 +53,7 @@ fs.writeFileSync(
 // Kompilera filen på nytt, åt klienten (i.e typ samma som återfinns i /client/ )
 //
 
-const compiledClientComponent = svelte.compile(svelteComponent, {
+const compiledClientComponent = compile(svelteComponent, {
     generate: "dom",
     name: "myApp",
     hydratable: true,
