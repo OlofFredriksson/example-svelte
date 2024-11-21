@@ -1,4 +1,4 @@
-# example-svelte (3.x)
+# example-svelte (5.x)
 
 > Exempelkod för att visa Svelte
 

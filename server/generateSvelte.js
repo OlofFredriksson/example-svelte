@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { compile } from "svelte/compiler";
+import { render } from "svelte/server";
 import esbuild from "esbuild";
 import path from "node:path";
 
@@ -10,7 +11,7 @@ const svelteComponent = fs.readFileSync(`${srcPath}/App.svelte`, "utf-8");
 
 const compiledComponent = compile(svelteComponent, {
     generate: "ssr",
-    css: true,
+    css: "injected",
     name: "myApp",
 });
 
@@ -31,8 +32,10 @@ esbuild.buildSync({
 
 const myApp = (await import("./public/dist.js")).default;
 
-const renderedApp = myApp.render({
-    passedProp: "passedProp (ssr)",
+const renderedApp = render(myApp, {
+    props: {
+        passedProp: "passedProp (ssr)",
+    },
 });
 
 fs.writeFileSync(
@@ -40,10 +43,8 @@ fs.writeFileSync(
     `
 <html>
     <body>
-    <style>
-        ${renderedApp.css.code}
-    </style>
-       ${renderedApp.html}
+       ${renderedApp.head}
+       ${renderedApp.body}
     </body>
 </html>
 `

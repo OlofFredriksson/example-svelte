@@ -3,10 +3,10 @@
     import { myFunction } from "./utils";
 
     let name = "world";
-    let clickedTimes = 0;
+    let clickedTimes = $state(0);
     let cats = ["Findus", "Tusse"];
 
-    export let passedProp;
+     let { passedProp } = $props();
 
     function handleClick() {
         clickedTimes++;
@@ -22,7 +22,7 @@
 
     Passed prop: {passedProp} <br />
     Clicked: {clickedTimes}
-    <button on:click={handleClick}>Button</button>
+    <button onclick={handleClick}>Button</button>
 
     <ul>
         {#each cats as cat}

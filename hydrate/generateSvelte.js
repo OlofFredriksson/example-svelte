@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import { compile } from "svelte/compiler";
 import esbuild from "esbuild";
 import path from "node:path";
+import { render } from "svelte/server";
 
 const __dirname = import.meta.dirname;
 const srcPath = path.join(__dirname, "../src");
@@ -10,7 +11,7 @@ const svelteComponent = fs.readFileSync(`${srcPath}/App.svelte`, "utf-8");
 
 const compiledComponent = compile(svelteComponent, {
     generate: "ssr",
-    css: true,
+    css: "injected",
     name: "myApp",
 });
 
@@ -30,8 +31,10 @@ esbuild.buildSync({
 //
 
 const mySSRApp = (await import("./public/dist.js")).default;
-const renderedApp = mySSRApp.render({
-    passedProp: "passedProp (hydrate)",
+const renderedApp = render(mySSRApp, {
+    props: {
+        passedProp: "passedProp (hydrate)",
+    },
 });
 
 fs.writeFileSync(
@@ -39,10 +42,8 @@ fs.writeFileSync(
     `
 <html>
     <body>
-    <style>
-        ${renderedApp.css.code}
-    </style>
-       ${renderedApp.html}
+       ${renderedApp.head}
+       ${renderedApp.body}
        <script src="./dist.js" type="text/javascript"></script>
     </body>
 </html>
@@ -63,9 +64,9 @@ fs.writeFileSync(
     `${srcPath}/dist.js`,
     `
     ${compiledClientComponent.js.code}
-    const app = new myApp({
+    import { hydrate } from "svelte";
+    const app = hydrate(myApp, {
         target: document.body,
-        hydrate: true,
         props: {
             passedProp: "passedProp (hydrate / client)"
         }

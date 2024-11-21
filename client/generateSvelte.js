@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import { compile } from "svelte/compiler";
+
 import esbuild from "esbuild";
 import path from "node:path";
 
@@ -12,21 +13,19 @@ const file = fs.readFileSync(`${srcPath}/App.svelte`, "utf-8");
 
 const compiledComponent = compile(file, {
     generate: "dom",
-    css: false,
+    css: "injected",
     name: "myApp",
 });
 
 fs.ensureDirSync(publicPath);
-fs.writeFileSync(
-    path.join(__dirname, "public/dist.css"),
-    compiledComponent.css.code
-);
+fs.writeFileSync(path.join(__dirname, "public/dist.css"), ".foo {}");
 
 fs.writeFileSync(
     `${srcPath}/dist.js`,
     `
     ${compiledComponent.js.code}
-    const app = new myApp({
+    import { mount } from "svelte";
+    const app = mount(myApp,{
         target: document.body,
         props: {
             passedProp: 42
